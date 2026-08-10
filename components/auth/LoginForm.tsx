@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
 import { LoginSchema } from "@/schemas";
 import { Input } from "@/components/ui/input";
@@ -160,7 +161,7 @@ export const LoginForm = () => {
 						type="submit"
 						className="w-full"
 					>
-						{showTwoFactor ? "Confirm" : "Login"}
+						{showTwoFactor ? "Confirm" : "Login"}{isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" aria-label="Logging in" />}
 					</Button>
 				</form>
 			</Form>

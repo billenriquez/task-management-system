@@ -1,207 +1,32 @@
-"use client";
-import { CalendarDateRangePicker } from "@/components/DateRangePicker";
-import { Overview } from "@/components/Overview";
-import { Accomplishments } from "@/components/Accomplishments";
+import Link from "next/link";
+import type { ElementType } from "react";
+import { AlertTriangle, CheckCircle2, CircleDot, FolderKanban, ListTodo, Plus } from "lucide-react";
+import { format } from "date-fns";
+
+import { TaskStatusBadge } from "@/components/work/TaskStatusBadge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useCurrentUser } from "@/hooks/UseCurrentUser";
-//import { Icons } from "@/components/Icons";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { currentUser } from "@/lib/Auth";
+import { db } from "@/lib/db";
 
-export default function page() {
-	const user = useCurrentUser();
+const Metric = ({ title, value, detail, icon: Icon }: { title: string; value: number; detail: string; icon: ElementType }) => <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">{title}</CardTitle><Icon className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{value}</div><p className="text-xs text-muted-foreground">{detail}</p></CardContent></Card>;
 
-	return (
-		<ScrollArea className="h-full">
-			<div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-				<div className="flex items-center justify-between space-y-2">
-					<h2 className="text-3xl font-bold tracking-tight">
-						Hi {user?.name || "User"}, Welcome back 👋
-					</h2>
-					<div className="hidden md:flex items-center space-x-2">
-						<CalendarDateRangePicker />
-						<Button>Download</Button>
-					</div>
-				</div>
-				<Tabs defaultValue="overview" className="space-y-4">
-					<TabsList>
-						<TabsTrigger value="overview">Overview</TabsTrigger>
-						<TabsTrigger value="analytics" disabled>
-							Analytics
-						</TabsTrigger>
-					</TabsList>
-					<TabsContent value="overview" className="space-y-4">
-						<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-							<Card>
-								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-									<CardTitle className="text-sm font-medium">
-										Total Projects
-									</CardTitle>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth="2"
-										className="h-4 w-4 text-muted-foreground"
-									>
-										<circle cx="12" cy="12" r="10" />
-										<path d="M12 12V6" />
-										<path d="M8 7.5A6.1 6.1 0 0 0 12 18a6 6 0 0 0 4-10.5" />
-									</svg>
-								</CardHeader>
-								<CardContent>
-									<div className="text-2xl font-bold">16</div>
-									<p className="text-xs text-muted-foreground">
-										+20.1% from last month
-									</p>
-								</CardContent>
-							</Card>
-							<Card>
-								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-									<CardTitle className="text-sm font-medium">
-										Total Members
-									</CardTitle>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth="2"
-										className="h-4 w-4 text-muted-foreground"
-									>
-										<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-										<circle cx="9" cy="7" r="4" />
-										<path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-									</svg>
-								</CardHeader>
-								<CardContent>
-									<div className="text-2xl font-bold">12</div>
-									<p className="text-xs text-muted-foreground">
-										0.0% from last month
-									</p>
-								</CardContent>
-							</Card>
-							<Card>
-								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-									<CardTitle className="text-sm font-medium">
-										Total Tasks
-									</CardTitle>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth="2"
-										className="h-4 w-4 text-muted-foreground"
-									>
-										<rect
-											width="20"
-											height="14"
-											x="2"
-											y="5"
-											rx="2"
-										/>
-										<path d="M2 10h20" />
-									</svg>
-								</CardHeader>
-								<CardContent>
-									<div className="text-2xl font-bold">89</div>
-									<p className="text-xs text-muted-foreground">
-										+19% from last month
-									</p>
-								</CardContent>
-							</Card>
-							<Card>
-								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-									<CardTitle className="text-sm font-medium">
-										Tasks in Progress
-									</CardTitle>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth="2"
-										className="h-4 w-4 text-muted-foreground"
-									>
-										<path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-									</svg>
-								</CardHeader>
-								<CardContent>
-									<div className="text-2xl font-bold">28</div>
-									<p className="text-xs text-muted-foreground">
-										+16 since the start of the month
-									</p>
-								</CardContent>
-							</Card>
-							<Card>
-								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-									<CardTitle className="text-sm font-medium">
-										Tasks Completed
-									</CardTitle>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth="2"
-										className="h-4 w-4 text-muted-foreground"
-									>
-										{/* <path d="M22 12h-4l-3 9L9 3l-3 9H2" /> */}
-										<path d="M20 6 9 17l-5-5" />
-									</svg>
-								</CardHeader>
-								<CardContent>
-									<div className="text-2xl font-bold">47</div>
-									<p className="text-xs text-muted-foreground">
-										+4.2% from last month
-									</p>
-								</CardContent>
-							</Card>
-						</div>
-						<div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
-							<Card className="col-span-4">
-								<CardHeader>
-									<CardTitle>Overview</CardTitle>
-								</CardHeader>
-								<CardContent className="pl-2">
-									<Overview />
-								</CardContent>
-							</Card>
-							<Card className="col-span-4 md:col-span-3">
-								<CardHeader>
-									<CardTitle>Accomplishments</CardTitle>
-									<CardDescription>
-										You made 65 accomplished tasks this
-										month.
-									</CardDescription>
-								</CardHeader>
-								<CardContent>
-									<Accomplishments />
-								</CardContent>
-							</Card>
-						</div>
-					</TabsContent>
-				</Tabs>
-			</div>
-		</ScrollArea>
-	);
+export default async function DashboardPage() {
+	const user = await currentUser();
+	if (!user?.id) return null;
+	const today = new Date();
+	const [projectCount, taskCount, inProgressCount, completedCount, overdueCount, upcomingTasks] = await Promise.all([
+		db.project.count({ where: { OR: [{ ownerId: user.id }, { members: { some: { userId: user.id } } }] } }),
+		db.task.count({ where: { assigneeId: user.id } }),
+		db.task.count({ where: { assigneeId: user.id, status: "IN_PROGRESS" } }),
+		db.task.count({ where: { assigneeId: user.id, status: "DONE" } }),
+		db.task.count({ where: { assigneeId: user.id, status: { not: "DONE" }, dueDate: { lt: today } } }),
+		db.task.findMany({ where: { assigneeId: user.id, status: { not: "DONE" } }, include: { project: { select: { name: true } } }, orderBy: [{ dueDate: { sort: "asc", nulls: "last" } }, { createdAt: "desc" }], take: 6 }),
+	]);
+
+	return <div className="mx-auto max-w-6xl space-y-6 p-5 md:p-8">
+		<div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-sm font-medium text-blue-700">Workspace overview</p><h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name?.split(" ")[0] || "there"}</h1><p className="mt-1 text-muted-foreground">Here is what needs your attention today.</p></div><div className="flex gap-2"><Button asChild variant="outline"><Link href="/dashboard/projects"><FolderKanban className="mr-2 h-4 w-4" />Projects</Link></Button><Button asChild><Link href="/dashboard/tasks"><Plus className="mr-2 h-4 w-4" />Add task</Link></Button></div></div>
+		<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5"><Metric title="Projects" value={projectCount} detail="Active workspace projects" icon={FolderKanban} /><Metric title="All tasks" value={taskCount} detail="Tasks you created" icon={ListTodo} /><Metric title="In progress" value={inProgressCount} detail="Currently underway" icon={CircleDot} /><Metric title="Completed" value={completedCount} detail="Work marked done" icon={CheckCircle2} /><Metric title="Overdue" value={overdueCount} detail="Needs attention" icon={AlertTriangle} /></div>
+		<Card><CardHeader><CardTitle>Next tasks</CardTitle><CardDescription>Open tasks ordered by due date, then newest first.</CardDescription></CardHeader><CardContent className="space-y-3">{upcomingTasks.map((task) => <Link key={task.id} href="/dashboard/tasks" className="flex flex-col gap-2 rounded-lg border p-4 transition-colors hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">{task.title}</p><p className="mt-1 text-sm text-muted-foreground">{task.project.name}{task.dueDate ? ` · Due ${format(task.dueDate, "MMM d")}` : " · No due date"}</p></div><TaskStatusBadge status={task.status} /></Link>)}{!upcomingTasks.length && <div className="rounded-lg border border-dashed py-12 text-center"><p className="font-medium">Your workspace is ready.</p><p className="mt-1 text-sm text-muted-foreground">Create a project and add your first task to see real progress here.</p><Button asChild className="mt-4"><Link href="/dashboard/projects">Create a project</Link></Button></div>}</CardContent></Card>
+	</div>;
 }

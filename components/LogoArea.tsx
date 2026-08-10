@@ -1,5 +1,5 @@
 import React from "react";
-import logoPic from "@/public/images/efi-logo.png";
+import logoPic from "@/public/images/taskmate-logo.png";
 import Image from "next/image";
 
 export default function LogoArea() {

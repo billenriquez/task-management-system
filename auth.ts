@@ -69,14 +69,20 @@ export const {
 			if (session.user) {
 				session.user.name = token.name;
 				session.user.email = token.email;
+				session.user.image = token.image as string | null;
 				session.user.isOAuth = token.isOAuth as boolean;
 			}
 
 			return session;
 		},
-		async jwt({ token }) {
+		async jwt({ token, trigger, session }) {
 			// console.log({sessionToken: token});
 			if (!token.sub) return token;
+
+			if (trigger === "update" && session?.image) {
+				token.image = session.image as string;
+				return token;
+			}
 
 			const existingUser = await getUserById(token.sub);
 
@@ -87,6 +93,7 @@ export const {
 			token.isOAuth = !!existingAccount;
 			token.name = existingUser.name;
 			token.email = existingUser.email;
+			token.image = existingUser.image;
 			token.role = existingUser.role;
 			token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
 

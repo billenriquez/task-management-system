@@ -13,13 +13,13 @@ interface ProtectedLayoutProps {
 
 const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
 	return (
-		<>
+		<div className="flex h-screen flex-col overflow-hidden">
 			<Header />
-			<div className="flex h-screen w-full overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-200 to-blue-500">
+			<div className="flex min-h-0 flex-1 w-full overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-200 to-blue-500">
 				<SideBar />
-				<main className="w-full">{children}</main>
+				<main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
 			</div>
-		</>
+		</div>
 	);
 };
 

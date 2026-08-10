@@ -2,7 +2,7 @@
 
 TaskMate is a full-stack task-management dashboard prototype built with Next.js and TypeScript. The project explores secure account workflows, protected application routes, role-aware access, user settings, and a responsive dashboard interface backed by PostgreSQL through Prisma.
 
-> **Project status:** Active prototype / portfolio code sample. The authentication and account-management foundation is implemented. Some task-management pages, dashboard values, and analytics views currently use scaffolded or sample content and remain to be connected to persistent project and task data.
+> **Project status:** Active portfolio prototype. Authentication and account management are implemented. The project, task, team, calendar, chat, and reporting interfaces are complete demonstration views and are clearly labeled where they use sample data; persistent work-management models and real-time messaging remain on the roadmap.
 
 ## Highlights
 

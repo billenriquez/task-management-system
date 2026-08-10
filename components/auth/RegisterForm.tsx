@@ -20,11 +20,17 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/FormError";
 import { FormSuccess } from "@/components/FormSuccess";
 import { register } from "@/actions/Register";
+import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 export const RegisterForm = () => {
+	const searchParams = useSearchParams();
+	const inviteToken = searchParams.get("invite");
 	const [error, setError] = useState<string | undefined>("");
 	const [success, setSuccess] = useState<string | undefined>("");
+	const [accountCreated, setAccountCreated] = useState(false);
 	const [isPending, startTransition] = useTransition();
+	const isFormDisabled = isPending || accountCreated;
 
 	const form = useForm<z.infer<typeof RegisterSchema>>({
 		resolver: zodResolver(RegisterSchema),
@@ -38,11 +44,17 @@ export const RegisterForm = () => {
 	const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
 		setError("");
 		setSuccess("");
+		setAccountCreated(false);
 
 		startTransition(() => {
-			register(values).then((data) => {
+			register(values, inviteToken).then((data) => {
 				setError(data.error);
-				setSuccess(data.success);
+				if (data.success) {
+					setSuccess(
+						"Account created. Check your email inbox (and spam folder) for the confirmation link before signing in."
+					);
+					setAccountCreated(true);
+				}
 			});
 		});
 	};
@@ -70,7 +82,7 @@ export const RegisterForm = () => {
 									<FormControl>
 										<Input
 											{...field}
-											disabled={isPending}
+											disabled={isFormDisabled}
 											placeholder="John Doe"
 										/>
 									</FormControl>
@@ -87,7 +99,7 @@ export const RegisterForm = () => {
 									<FormControl>
 										<Input
 											{...field}
-											disabled={isPending}
+											disabled={isFormDisabled}
 											placeholder="john.doe@example.com"
 											type="email"
 										/>
@@ -105,7 +117,7 @@ export const RegisterForm = () => {
 									<FormControl>
 										<Input
 											{...field}
-											disabled={isPending}
+											disabled={isFormDisabled}
 											placeholder="******"
 											type="password"
 										/>
@@ -118,11 +130,12 @@ export const RegisterForm = () => {
 					<FormError message={error} />
 					<FormSuccess message={success} />
 					<Button
-						disabled={isPending}
+						disabled={isFormDisabled}
 						type="submit"
 						className="w-full"
 					>
-						Create an account
+						{accountCreated ? "Account created — check your email" : "Create an account"}
+						{isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" aria-label="Creating account" />}
 					</Button>
 				</form>
 			</Form>

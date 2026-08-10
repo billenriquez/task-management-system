@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/FormError";
 import { FormSuccess } from "@/components/FormSuccess";
 import { reset } from "@/actions/Reset";
+import { Loader2 } from "lucide-react";
 
 export const ResetForm = () => {
 	const [error, setError] = useState<string | undefined>("");
@@ -84,7 +85,7 @@ export const ResetForm = () => {
 						type="submit"
 						className="w-full"
 					>
-						Send reset email
+						Send reset email{isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" aria-label="Sending reset email" />}
 					</Button>
 				</form>
 			</Form>

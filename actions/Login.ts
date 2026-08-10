@@ -35,16 +35,20 @@ export const login = async (
 	}
 
 	if (!existingUser.emailVerified) {
-		const verificationToken = await generateVerificationToken(
-			existingUser.email
-		);
+		try {
+			const verificationToken = await generateVerificationToken(existingUser.email);
+			await sendVerificationEmail(verificationToken.email, verificationToken.token);
+		} catch {
+			return {
+				error:
+					"Your email is not verified, and we could not send a new confirmation link. Please try again later.",
+			};
+		}
 
-		await sendVerificationEmail(
-			verificationToken.email,
-			verificationToken.token
-		);
-
-		return { success: "Confirmation email sent!" };
+		return {
+			success:
+				"Your email is not verified yet. We sent a confirmation link to your inbox. Check your inbox and spam folder, open the link, then return here to sign in.",
+		};
 	}
 
 	if (existingUser.isTwoFactorEnabled && existingUser.email) {
