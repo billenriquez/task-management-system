@@ -14,9 +14,43 @@ enum UserRole {
   USER
 }
 
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  DEPARTMENT_MANAGER
+  SENIOR_MEMBER
+  MEMBER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+}
+
+enum TaskDelegationScope {
+  NONE
+  DIRECT_REPORTS
+  PROJECT_MEMBERS
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
+  jobTitle      String?
+  department    String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
@@ -25,6 +59,125 @@ model User {
   accounts      Account[]
   isTwoFactorEnabled Boolean @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
+  projects      Project[]
+  tasks         Task[]
+  projectMemberships ProjectMember[]
+  workspaceMemberships WorkspaceMember[]
+  invitationsSent Invitation[] @relation("WorkspaceInvitations")
+  taskCollaborations TaskCollaborator[]
+}
+
+model Workspace {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  members     WorkspaceMember[]
+  projects    Project[]
+  invitations Invitation[]
+}
+
+model WorkspaceMember {
+  id            String          @id @default(cuid())
+  workspaceId   String
+  userId        String
+  role          WorkspaceRole   @default(MEMBER)
+  managerId     String?
+  createdAt     DateTime        @default(now())
+  workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  manager       WorkspaceMember? @relation("WorkspaceReportingLine", fields: [managerId], references: [id])
+  directReports WorkspaceMember[] @relation("WorkspaceReportingLine")
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@index([managerId])
+}
+
+model Invitation {
+  id          String           @id @default(cuid())
+  workspaceId String
+  email       String
+  role        WorkspaceRole    @default(MEMBER)
+  token       String           @unique
+  status      InvitationStatus @default(PENDING)
+  expires     DateTime
+  acceptedAt  DateTime?
+  invitedById String
+  createdAt   DateTime         @default(now())
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedBy   User             @relation("WorkspaceInvitations", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, email])
+  @@index([email, status])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  workspaceId String?
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+  members     ProjectMember[]
+
+  @@index([ownerId])
+  @@index([workspaceId])
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  progress    Int          @default(0)
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assigneeId  String
+  assignee    User         @relation(fields: [assigneeId], references: [id], onDelete: Cascade)
+  parentId    String?
+  parent      Task?        @relation("TaskHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children    Task[]       @relation("TaskHierarchy")
+  delegationScope TaskDelegationScope @default(NONE)
+  collaborators TaskCollaborator[]
+
+  @@index([projectId])
+  @@index([assigneeId, status])
+  @@index([dueDate])
+  @@index([parentId])
+}
+
+model TaskCollaborator {
+  id        String   @id @default(cuid())
+  taskId    String
+  userId    String
+  createdAt DateTime @default(now())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, userId])
+  @@index([userId])
 }
 
 model Account {

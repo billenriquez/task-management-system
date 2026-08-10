@@ -8,12 +8,6 @@ export const navItems: NavItem[] = [
 		label: "Dashboard",
 	},
 	{
-		title: "Teams",
-		href: "/dashboard/teams",
-		icon: "group",
-		label: "Teams",
-	},
-	{
 		title: "Projects",
 		href: "/dashboard/projects",
 		icon: "laptop",
@@ -26,28 +20,10 @@ export const navItems: NavItem[] = [
 		label: "Tasks",
 	},
 	{
-		title: "Members",
-		href: "/dashboard/members",
+		title: "Workspace admin",
+		href: "/dashboard/admin",
 		icon: "user",
-		label: "Members",
-	},
-	{
-		title: "Calendar",
-		href: "/dashboard/calendar",
-		icon: "calendar",
-		label: "Calendar",
-	},
-	{
-		title: "Chat",
-		href: "/dashboard/chat",
-		icon: "chat",
-		label: "Chat",
-	},
-	{
-		title: "Reports",
-		href: "/dashboard/reports",
-		icon: "reports",
-		label: "Reports",
+		label: "Workspace admin",
 	},
 	// {
 	// 	title: "User",

@@ -62,10 +62,12 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
 		values.newPassword = undefined;
 	}
 
+	const { role: _requestedRole, ...safeValues } = values;
+
 	const updatedUser = await db.user.update({
 		where: { id: dbUser.id },
 		data: {
-			...values,
+			...safeValues,
 		},
 	});
 

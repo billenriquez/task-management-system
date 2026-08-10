@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/FormError";
 import { FormSuccess } from "@/components/FormSuccess";
 import { newPassword } from "@/actions/NewPassword";
+import { Loader2 } from "lucide-react";
 
 export const NewPasswordForm = () => {
 	const searchParams = useSearchParams();
@@ -88,7 +89,7 @@ export const NewPasswordForm = () => {
 						type="submit"
 						className="w-full"
 					>
-						Reset password
+						Reset password{isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" aria-label="Resetting password" />}
 					</Button>
 				</form>
 			</Form>
