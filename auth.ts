@@ -1,12 +1,16 @@
 import NextAuth from "next-auth";
 import { UserRole } from "@prisma/client";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import bcrypt from "bcryptjs";
+import Credentials from "next-auth/providers/credentials";
 
 import { db } from "@/lib/db";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/User";
 import { getTwoFactorConfirmationByUserId } from "@/data/TwoFactorConfirmation";
 import { getAccountByUserId } from "./data/Account";
+import { LoginSchema } from "@/schemas";
+import { getUserByEmail } from "@/data/User";
 
 export const {
 	handlers: { GET, POST },
@@ -103,4 +107,16 @@ export const {
 	adapter: PrismaAdapter(db),
 	session: { strategy: "jwt" },
 	...authConfig,
+	providers: [
+		Credentials({
+			async authorize(credentials) {
+				const validatedFields = LoginSchema.safeParse(credentials);
+				if (!validatedFields.success) return null;
+				const { email, password } = validatedFields.data;
+				const user = await getUserByEmail(email);
+				if (!user?.password) return null;
+				return await bcrypt.compare(password, user.password) ? user : null;
+			},
+		}),
+	],
 });
